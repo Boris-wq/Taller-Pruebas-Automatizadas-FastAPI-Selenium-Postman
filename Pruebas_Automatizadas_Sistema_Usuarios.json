@@ -1,0 +1,196 @@
+{
+  "info": {
+    "_postman_id": "2d2862bd-a901-4e0c-957b-91a2dcfe90d1",
+    "name": "Pruebas Automatizadas - Sistema de Usuarios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51753246",
+    "_collection_link": "https://go.postman.co/collection/51753246-2d2862bd-a901-4e0c-957b-91a2dcfe90d1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Consultar usuarios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Registrar usuario",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// PRUEBA 1: Verificar código 201\r\npm.test(\"Usuario creado con estado 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\n// PRUEBA 2: Verificar estructura de respuesta\r\npm.test(\"La respuesta contiene los datos del usuario\", function () {\r\n    const usuario = pm.response.json();\r\n\r\n    pm.expect(usuario).to.have.property(\"id\");\r\n    pm.expect(usuario).to.have.property(\"name\");\r\n    pm.expect(usuario).to.have.property(\"email\");\r\n});\r\n\r\n// PRUEBA 3: Verificar nombre\r\npm.test(\"El nombre del usuario es correcto\", function () {\r\n    const usuario = pm.response.json();\r\n\r\n    pm.expect(usuario.name).to.eql(\"Carlos Pruebas\");\r\n});\r\n\r\n// PRUEBA 4: Verificar correo\r\npm.test(\"El correo electrónico es correcto\", function () {\r\n    const usuario = pm.response.json();\r\n\r\npm.expect(usuario.email).to.eql(\r\n    \"carlos.pruebas3@demo.com\"\r\n);\r\n});\r\n\r\n// PRUEBA 5: Verificar que no se exponga la contraseña\r\npm.test(\"La respuesta no contiene contraseña\", function () {\r\n    const usuario = pm.response.json();\r\n\r\n    pm.expect(usuario).to.not.have.property(\"password\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Carlos Pruebas\",\r\n    \"email\": \"carlos.pruebas3@demo.com\",\r\n    \"password\": \"Prueba123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/users/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "users",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Rechazar usuario duplicado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// PRUEBA 1: Verificar código 409\r\npm.test(\"El sistema rechaza el registro duplicado\", function () {\r\n    pm.response.to.have.status(409);\r\n});\r\n\r\n// PRUEBA 2: Verificar mensaje de error\r\npm.test(\"El mensaje indica que el correo ya existe\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.detail).to.eql(\r\n        \"El correo ya está registrado\"\r\n    );\r\n});\r\n\r\n// PRUEBA 3: Verificar que no se creó otro usuario\r\npm.test(\"La respuesta no contiene un nuevo ID\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta).to.not.have.property(\"id\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Carlos Duplicado\",\r\n    \"email\": \"carlos.pruebas3@demo.com\",\r\n    \"password\": \"Prueba123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/users/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "users",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Login exitoso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// PRUEBA 1: Verificar código HTTP 200\r\npm.test(\"Inicio de sesión responde con estado 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// PRUEBA 2: Verificar mensaje de éxito\r\npm.test(\"El mensaje de inicio de sesión es correcto\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.message).to.eql(\r\n        \"Inicio de sesión exitoso\"\r\n    );\r\n});\r\n\r\n// PRUEBA 3: Verificar información del usuario\r\npm.test(\"La respuesta contiene los datos del usuario\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.user).to.have.property(\"id\");\r\n    pm.expect(respuesta.user).to.have.property(\"name\");\r\n    pm.expect(respuesta.user).to.have.property(\"email\");\r\n});\r\n\r\n// PRUEBA 4: Verificar correo del usuario\r\npm.test(\"El correo corresponde al administrador\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.user.email).to.eql(\r\n        \"admin@demo.com\"\r\n    );\r\n});\r\n\r\n// PRUEBA 5: Verificar que no se exponga la contraseña\r\npm.test(\"La respuesta no contiene contraseña\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.user).to.not.have.property(\"password\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"admin@demo.com\",\r\n    \"password\": \"Admin123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/login",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Login incorrecto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// PRUEBA 1: Verificar código 401\r\npm.test(\"El sistema rechaza las credenciales incorrectas\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\n// PRUEBA 2: Verificar mensaje de error\r\npm.test(\"El mensaje de error es correcto\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta.detail).to.eql(\r\n        \"Correo o contraseña incorrectos\"\r\n    );\r\n});\r\n\r\n// PRUEBA 3: Verificar que no se entregue información del usuario\r\npm.test(\"La respuesta no contiene datos del usuario\", function () {\r\n    const respuesta = pm.response.json();\r\n\r\n    pm.expect(respuesta).to.not.have.property(\"user\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"admin@demo.com\",\r\n    \"password\": \"ClaveIncorrecta\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/login",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
